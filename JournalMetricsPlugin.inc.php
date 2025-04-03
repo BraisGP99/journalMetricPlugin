@@ -18,6 +18,9 @@ use APP\core\Application;
 use APP\core\Services;
 use APP\facades\Repo;
 use PKP\plugins\Hook;
+use PKP\template\TemplateManager;
+
+
 
 class JournalMetricsPlugin extends GenericPlugin
 {
@@ -65,8 +68,8 @@ class JournalMetricsPlugin extends GenericPlugin
      */
     public function readyData($hookName, $args)
     {
+        $request = Application::get()->getRequest();
         $templateManager = TemplateManager::getManager($request);
-        $request = Applications::get()->getRequest();
         $router = $request->getRouter();
         $journalId = $router->getRequestedArgs($request)[0] ?? null;
 
@@ -184,7 +187,7 @@ en cada iteración metric é un array asociativo composto polos tipos de métric
         
 
         $request = Application::get()->getRequest();
-        $router = $request->getRouer();
+        $router = $request->getRouter();
         $journalId = $router->getRequestedArgs($request)[0];
         $journal = is_numeric($journalId) ? Repo::submission()->get(intval($journalId)) ?? null:null;
 
@@ -198,4 +201,4 @@ en cada iteración metric é un array asociativo composto polos tipos de métric
 
 // For backwards compatibility -- expect this to be removed approx. OJS/OMP/OPS 3.6
 if (!PKP_STRICT_MODE) {
-    class_alias('\APP\plugins\generic\pluginTemplate\PluginTemplatePlugin', '\PluginTemplatePlugin');}
+    class_alias('\APP\plugins\generic\journalMetrics\JournalMetrics', '\JournalMetrics');}
