@@ -6,6 +6,7 @@
  * Copyright (c) 2017-2023 John Willinsky
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
+ * 
  * @class PluginTemplatePlugin
  * @brief Plugin class for the PluginTemplate plugin.
  */
@@ -30,7 +31,9 @@ class JournalMetricsPlugin extends GenericPlugin
         $success = parent::register($category, $path);
 
         if ($success && $this->getEnabled()) {
-           
+
+            $this->addLocaleData();
+
             Hook::add('TemplateManager::display',[$this,'readyData']);
             Hook::add('TemplateManager::display',[$this,'putData']);
         }
@@ -61,23 +64,24 @@ class JournalMetricsPlugin extends GenericPlugin
     }
 
     /**
-     * Add a settings action to the plugin's entry in the plugins list.
+     *
      *
      * @param Request $request
-     * @param array $actionArgs
+     * @param $args
      */
     public function readyData($hookName, $args)
     {
-        $request = Application::get()->getRequest();
         $templateManager = TemplateManager::getManager($request);
+        $request = Application::get()->getRequest();
         $router = $request->getRouter();
         $journalId = $router->getRequestedArgs($request)[0] ?? null;
-
-        if($journalId !== null){
+        $journal = is_numeric($journalId)? Repo::journal()->get(intval($journalId)) ?? null:null;
+        if($journal !== null){
             $templateManager->assign('aggregatedMetrics',$this->getAggregatedMetrics($journalId));
-            $metricsHtml = $templateMgr->fetch($this->getTemplateResource('journalMetrics.tpl'));
+            $metricsHtml = $templateManager->fetch($this->getTemplateResource('journalMetrics.tpl'));
             $templateManager->assign('journalMetricsHtml',$metricsHtml);
         }
+        return false; 
     }
 
     /**
@@ -185,20 +189,22 @@ en cada iteración metric é un array asociativo composto polos tipos de métric
 
     public function putData($hookName,$args){
         
-
+        $smarty =& $args[0];
+        $output =& $args[2];
         $request = Application::get()->getRequest();
         $router = $request->getRouter();
         $journalId = $router->getRequestedArgs($request)[0];
         $journal = is_numeric($journalId) ? Repo::submission()->get(intval($journalId)) ?? null:null;
 
         if($journal !== null){
-            $templateManager = TemplateManager::getManager($request);
-            $templateManager->addStyleSheet('styles-css'.'/'.$this->getPluginPath().'/styles/metrics-css');
+            $metricsAggregated = $this->getAggregatedMetrics($journalId);
+            $smarty->assign('metricsAggregated',$metricsAggregated);
+            $metricsHtml = $smarty->fetch($this->getTemplateResource('journalMetrics.tpl'));
+            $output .= $metricsHtml;
         }
-        return false;
     }
 }
 
 // For backwards compatibility -- expect this to be removed approx. OJS/OMP/OPS 3.6
 if (!PKP_STRICT_MODE) {
-    class_alias('\APP\plugins\generic\journalMetrics\JournalMetrics', '\JournalMetrics');}
+    class_alias('\APP\plugins\generic\JournalMetrics\journalMetrics', '\journalMetrics');}
