@@ -11,7 +11,7 @@
   -->
 <version>
 	<application>journalMetrics</application>
-	<type>plugins.generic</type>
+	<type>plugins.blocks</type>
 	<release>1.0.0.0</release>
 	<date>2025-04-03</date>
 	<class>JournalMetricsPlugin</class>

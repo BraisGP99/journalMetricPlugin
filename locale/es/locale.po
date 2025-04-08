@@ -17,12 +17,26 @@ msgstr "Plugin de estadísticas para Revistas"
 msgid "plugins.block.journalMetrics.description"
 msgstr "Muestra vistas y descargas de Revistas"
 
-mgsid "puglins.block.journalMetrics.views"
-mgstr "Vistas" 
 
-mgsid "puglins.block.journalMetrics.downloads"
-mgstr "Descargas" 
+msgid "plugins.block.journalMetrics.views"
+msgstr "Visitas" 
 
-mgsid "puglins.block.journalMetrics.total"
-mgstr "Total" 
+msgid "plugins.block.journalMetrics.downloads"
+msgstr "Descargas" 
 
+msgid "plugins.block.journalMetrics.total"
+msgstr "Total" 
+
+
+msgid "plugins.block.journalMetrics.error"
+msgstr "Error JournalMetricsPlugin"
+
+msgid "plugins.block.journalMetrics.showTotal.description"
+msgstr "Shows the total Metrics"
+
+
+msgid "plugins.block.journalMetrics.colorBackground.description"
+msgstr "Select color for background"
+
+msgid "plugins.block.journalMetrics.colorText.description"
+msgstr "Select color for text"

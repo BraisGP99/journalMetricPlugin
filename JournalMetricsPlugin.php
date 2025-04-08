@@ -11,34 +11,28 @@
  * @brief Plugin class for the PluginTemplate plugin.
  */
 
-namespace APP\plugins\generic\journalMetrics;
+namespace APP\plugins\blocks\journalMetrics;
 
 
-use PKP\plugins\GenericPlugin;
+use PKP\plugins\BlockPlugin;
 use APP\core\Application;
 use APP\core\Services;
-use APP\facades\Repo;
-use PKP\plugins\Hook;
-use PKP\template\TemplateManager;
+use PKP\core\JSONMessage;
+use APP\plugins\blocks\journalMetrics\classes\Settings\Actions;
+use APP\plugins\blocks\journalMetrics\classes\Settings\Manage;
 
 
-
-class JournalMetricsPlugin extends GenericPlugin
+class JournalMetricsPlugin extends BlockPlugin
 {
-    /** @copydoc GenericPlugin::register() */
-    public function register($category, $path, $mainContextId = null): bool
+    
+ /**
+     * Install default settings on journal creation.
+     *
+     * @return string
+     */
+    public function getContextSpecificPluginSettingsFile()
     {
-        $success = parent::register($category, $path);
-
-        if ($success && $this->getEnabled()) {
-
-            $this->addLocaleData();
-
-            Hook::add('TemplateManager::display',[$this,'readyData']);
-            Hook::add('TemplateManager::display',[$this,'putData']);
-        }
-
-        return $success;
+        return $this->getPluginPath() . '/settings.xml';
     }
 
     /**
@@ -63,32 +57,29 @@ class JournalMetricsPlugin extends GenericPlugin
         return __('plugins.block.journalMetrics.description');
     }
 
-    /**
-     *
-     *
-     * @param Request $request
-     * @param $args
-     */
-   public function readyData($hookName, $args)
-{
-    $templateMgr = $args[0];
-    $request = Application::get()->getRequest();
-    $router = $request->getRouter();
-    $requestedArgs = $router->getRequestedArgs($request);
 
-    $journalId = $requestedArgs[0] ?? null;
-    error_log("Requested journalId: " . $journalId);  
-
-    $journal = is_numeric($journalId) ? Repo::submission()->get(intval($journalId)) ?? null : null;
+    public function getContents($templateMgr, $request = null){
     
-    error_log("Journal: " . print_r($journal, true));  
+    $request = Application::get()->getRequest();
+    $journal = $request->getJournal();
+    $journalId= $journal->getId();
+    $showTotal = $this->getSetting($request->getContext()->getId(), 'showTotal');
+    $colorBackground = $this->getSetting($request->getContext()->getId(), 'colorBackground');
+    $colorText = $this->getSetting($request->getContext()->getId(), 'colorText');
+    $templateMgr->assign([
+        "showTotal" => $showTotal,
+        "colorBackground" => $colorBackground,
+        "colorText" => $colorText,
+    ]);
+
 
     if ($journal !== null) {
         $templateMgr->assign('aggregatedMetrics', $this->getAggregatedMetrics($journalId));
-        $metricsHtml = $templateMgr->fetch($this->getTemplateResource('journalMetrics.tpl'));
-        $templateMgr->assign('journalMetricsHtml', $metricsHtml);
+        $cssUrl = $request->getBaseUrl().'/'.$this->getPluginPath().'/css/styles.css';
+        $templateMgr->addStyleSheet('journalMetrics', $cssUrl,["contexts" => "frontend","backend"]);
+        
     }
-    return false; 
+    return parent::getContents($templateMgr,$request); 
 }
 
 
@@ -98,10 +89,15 @@ class JournalMetricsPlugin extends GenericPlugin
         // $statsServices = app()->get('publicationStats');
 
         $metricsByType = $statsServices->getTotalsByType($journalId,$request->getContext()->getId(),null,null);
-       
-        $metricsAggregated = [
-			'views' =>  $metricsByType['abstract'],
-			'downloads' => 0
+    // Por algún motivo los error logs hacen display en el html en la sección de los bloques? ??? no entiendo
+    //    error_log("metrics:" . print_r($metricsByType));
+    //    error_log("metrics abstract:" . print_r($metricsByType['abstract']));
+
+        $metricsByType['abstract'] = 77;
+
+       $metricsAggregated = [
+            'views' =>  $metricsByType['abstract'],
+			'downloads' => 5
 		];
 
 		foreach ($metricsByType as $key => $value) {
@@ -115,29 +111,34 @@ class JournalMetricsPlugin extends GenericPlugin
         return $metricsAggregated;
     }
 
-   
-   public function putData($hookName, $args)
-{
-    $smarty =& $args[0];
-    $output =& $args[2];
-    $request = Application::get()->getRequest();
-    $router = $request->getRouter();
-    $requestedArgs = $router->getRequestedArgs($request);
-
-    $journalId = $requestedArgs[0] ?? null;
-    error_log("Requested journalId (putData): " . $journalId);
-
-    $journal = is_numeric($journalId) ? Repo::submission()->get(intval($journalId)) ?? null : null;
-    error_log("Journal (putData): " . print_r($journal, true));
-
-    if ($journal !== null) {
-        $metricsAggregated = $this->getAggregatedMetrics($journalId);
-        error_log("Aggregated Metrics: " . print_r($metricsAggregated, true));
-
-        $smarty->assign('metricsAggregated', $metricsAggregated);
-        $metricsHtml = $smarty->fetch($this->getTemplateResource('journalMetrics.tpl'));
-        $output .= $metricsHtml;
+    /**
+     * Add a settings action to the plugin's entry in the plugins list.
+     *
+     * @param Request $request
+     * @param array $actionArgs
+     */
+    public function getActions($request, $actionArgs): array
+    {
+        $actions = new Actions($this);
+        return $actions->execute($request, $actionArgs, parent::getActions($request, $actionArgs));
     }
+
+ /**
+     * Load a form when the `settings` button is clicked and
+     * save the form when the user saves it.
+     *
+     * @param array $args
+     * @param Request $request
+     */
+    public function manage($args, $request): JSONMessage
+    {
+        $manage = new Manage($this);
+        return $manage->execute($args, $request);
+    }
+
+    public function getSettingsForm($context): \PKP\form\Form {
+        import('plugins.blocks.journalMetrics.classes.form.JournalMetricsSettingsForm');
+         return new \APP\plugins\blocks\journalMetrics\classes\form\JournalMetricsSettingsForm($this, $context->getId());
 }
 
 }
