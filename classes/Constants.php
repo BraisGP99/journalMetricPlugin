@@ -20,14 +20,12 @@ class Constants
     public const SETTINGS_TEMPLATE = 'settingsForm.tpl';
 
     /**
-     * The name of the publication statement,
+     * 
      * used to save to the database and to show on the front end.
      */
-    public const PUBLICATION_STATEMENT = 'publicationStatement';
+    public const SHOW_TOTAL = "showTotal";
 
-    public const SHOW_TOTAL = true;
+    public const COLOR_BACKGROUND = 'colorBackground';
 
-    public const COLOR_BACKGROUND = '#9933ff';
-
-    public const COLOR_TEXT = '#ffcc00';
+    public const COLOR_TEXT = "colorText";
 }

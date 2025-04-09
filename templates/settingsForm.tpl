@@ -5,47 +5,45 @@
  * Copyright (c) 2003-2023 John Willinsky
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
- * Settings form for the pluginTemplate plugin.
+ * Settings form for the journalMetrics plugin.
  *}
 <script>
 	$(function() {ldelim}
-		$('#pluginTemplateSettings').pkpHandler('$.pkp.controllers.form.AjaxFormHandler');
+		$('#journalMetricsSettings').pkpHandler('$.pkp.controllers.form.AjaxFormHandler');
 	{rdelim});
 </script>
 
 <form
 	class="pkp_form"
-	id="pluginTemplateSettings"
+	id="journalMetricsSettings"
 	method="POST"
-	action="{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="generic" plugin=$pluginName verb="settings" save=true}"
+	action="{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="blocks" plugin=$pluginName verb="settings" save=true}"
 >
 	<!-- Always add the csrf token to secure your form -->
 	{csrf}
 
-	{fbvFormSection label="plugins.generic.pluginTemplate.publicationStatement"}
+	{fbvFormSection label="plugins.block.journalMetrics.colorBackground.description"}
 		{fbvElement
 			type="text"
-			id="{APP\plugins\blocks\journalMetrics\classes\Constants::PUBLICATION_STATEMENT}"
-			value=${APP\plugins\blocks\journalMetrics\classes\Constants::PUBLICATION_STATEMENT}
+			id="colorBackground"
+			value=$colorBackground
 			description="plugins.block.journalMetrics.colorBackground.description"
 		}
-		{fbvElement
-			type="color"
-			id="{APP\plugins\blocks\journalMetrics\classes\Constants::COLOR_BACKGROUND}"
-			value=${APP\plugins\blocks\journalMetrics\classes\Constants::COLOR_BACKGROUND}
-			description="plugins.block.journalMetrics.colorBackground.description"
-		}
+	{/fbvFormSection}
+	{fbvFormSection label="plugins.block.journalMetrics.colorText.description"}
 		{fbvElement
 			type="text"
-			id="{APP\plugins\blocks\journalMetrics\classes\Constants::COLOR_TEXT}"
-			value=${APP\plugins\blocks\journalMetrics\classes\Constants::COLOR_TEXT}
+			id="colorText"
+			value=$colorText
 			description="plugins.block.journalMetrics.colorText.description"
 		}
-		{fbvElement
-			type="checkbox"
-			id="{APP\plugins\blocks\journalMetrics\classes\Constants::SHOW_TOTAL}"
-			value=${APP\plugins\blocks\journalMetrics\classes\Constants::SHOW_TOTAL}
-			description="plugins.block.journalMetrics.showTotal.description"
+	{/fbvFormSection}
+	{fbvFormSection label="plugins.block.journalMetrics.showTotal.description" list="true"}
+		{fbvElement 
+    		type="checkbox" 
+    		id="showTotal"
+    		checked=$showTotal 
+    		label="plugins.block.journalMetrics.showTotal.description"
 		}
 	{/fbvFormSection}
 	{fbvFormButtons submitText="common.save"}

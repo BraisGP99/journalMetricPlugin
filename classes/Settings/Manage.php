@@ -42,9 +42,8 @@ class Manage
             case 'settings':
 
 
-                //load custom form
-                $form = new JournalMetricsSettingsForm($this->plugin, $request->getContext()->getId());
-
+               // Load the custom form
+                $form = new JournalMetricsSettingsForm($this->plugin);
 
                 // Fetch the form the first time it loads, before
                 // the user has tried to save it
@@ -57,6 +56,7 @@ class Manage
                 $form->readInputData();
                 if ($form->validate()) {
                     $form->execute();
+                    
                     return new JSONMessage(true);
                 }
         }

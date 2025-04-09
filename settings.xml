@@ -25,4 +25,17 @@
 		<name>context</name>
 		<value>1</value>
 	</setting>
+	<setting type="bool">
+		<name>showTotal</name>
+		<value>true</value>
+	</setting>
+	<setting type="string">
+		<name>colorBackground</name>
+		<value>#9933ff</value>
+	</setting>
+	<setting type="string">
+		<name>colorText</name>
+		<value>#ffcc00</value>
+	</setting>
+	
 </plugin_settings>

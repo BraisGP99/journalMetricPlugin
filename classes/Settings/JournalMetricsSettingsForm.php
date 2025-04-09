@@ -13,11 +13,17 @@
  * @brief Form for journal managers to modify journal Metrics plugin settings
  */
 
- namespace APP\plugins\blocks\journalMetrics;
-
+ namespace APP\plugins\blocks\journalMetrics\classes\Settings;
+ 
+ use APP\core\Application;
+ use APP\notification\Notification;
+ use APP\notification\NotificationManager;
  use APP\template\TemplateManager;
- use PKP\cache\CacheManager;
  use PKP\form\Form;
+ use APP\plugins\blocks\journalMetrics\classes\Constants;
+ use APP\plugins\blocks\journalMetrics\JournalMetricsPlugin;
+ use PKP\form\validation\FormValidatorCSRF;
+ use PKP\form\validation\FormValidatorPost;
 
 class JournalMetricsSettingsForm extends Form {
 
@@ -29,7 +35,7 @@ class JournalMetricsSettingsForm extends Form {
      *
      * Always add POST and CSRF validation to secure your form.
      */
-    public function __construct(PluginTemplatePlugin &$plugin)
+    public function __construct(JournalMetricsPlugin &$plugin)
     {
         $this->plugin = &$plugin;
 
@@ -52,10 +58,26 @@ class JournalMetricsSettingsForm extends Form {
             ->getContext();
 
         $this->setData(
-            Constants::PUBLICATION_STATEMENT,
+            Constants::COLOR_BACKGROUND,
             $this->plugin->getSetting(
                 $context->getId(),
-                Constants::PUBLICATION_STATEMENT
+                Constants::COLOR_BACKGROUND
+            )
+        );
+
+        
+        $this->setData(
+            Constants::COLOR_TEXT,
+            $this->plugin->getSetting(
+                $context->getId(),
+                Constants::COLOR_TEXT
+            )
+        );
+        $this->setData(
+            Constants::SHOW_TOTAL,
+            $this->plugin->getSetting(
+                $context->getId(),
+                Constants::SHOW_TOTAL
             )
         );
 
@@ -64,10 +86,12 @@ class JournalMetricsSettingsForm extends Form {
 
     /**
      * Load data that was submitted with the form
+     * 
+     * 
      */
     public function readInputData(): void
     {
-        $this->readUserVars([Constants::PUBLICATION_STATEMENT,Constants::SHOW_TOTAL,Constants::COLOR_BACKGROUND,Constants::COLOR_TEXT]);
+        $this->readUserVars([Constants::SHOW_TOTAL,Constants::COLOR_BACKGROUND,Constants::COLOR_TEXT]);
 
         parent::readInputData();
     }
@@ -83,6 +107,7 @@ class JournalMetricsSettingsForm extends Form {
      */
     public function fetch($request, $template = null, $display = false): ?string
     {
+        
         $templateMgr = TemplateManager::getManager($request);
         $templateMgr->assign('pluginName', $this->plugin->getName());
 
@@ -99,12 +124,24 @@ class JournalMetricsSettingsForm extends Form {
             ->getRequest()
             ->getContext();
 
+        $showTotal = ($this->getData(Constants::SHOW_TOTAL) == true) ? $this->getData(Constants::SHOW_TOTAL) : false;
         $this->plugin->updateSetting(
             $context->getId(),
-            Constants::PUBLICATION_STATEMENT,
-            $this->getData(Constants::PUBLICATION_STATEMENT)
+            Constants::SHOW_TOTAL,
+            $showTotal
         );
-
+        $colorBackground =($this->controlStringInput($this->getData(Constants::COLOR_BACKGROUND))) ?  $this->getData(Constants::COLOR_BACKGROUND) : 'white'; 
+        $this->plugin->updateSetting(
+            $context->getId(),
+            Constants::COLOR_BACKGROUND,
+            $colorBackground
+        );
+         $colorText =($this->controlStringInput($this->getData(Constants::COLOR_TEXT))) ?  $this->getData(Constants::COLOR_TEXT) : 'black';
+        $this->plugin->updateSetting(
+            $context->getId(),
+            Constants::COLOR_TEXT,
+           $colorText
+        );
         $notificationMgr = new NotificationManager();
         $notificationMgr->createTrivialNotification(
             Application::get()->getRequest()->getUser()->getId(),
@@ -113,5 +150,16 @@ class JournalMetricsSettingsForm extends Form {
         );
 
         return parent::execute();
+    }
+
+    /*
+    * Función que checkea que el input del color sea hexagonal, de no serlo se le asigna un default a la variable
+    */ 
+    private function controlStringInput($colorString){
+        if(substr($colorString,0,1) == "#" && strlen($colorString) == 7){
+            return true;
+        }
+
+        return false;
     }
 }

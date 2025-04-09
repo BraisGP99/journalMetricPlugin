@@ -20,6 +20,8 @@ use APP\core\Services;
 use PKP\core\JSONMessage;
 use APP\plugins\blocks\journalMetrics\classes\Settings\Actions;
 use APP\plugins\blocks\journalMetrics\classes\Settings\Manage;
+use APP\core\Request;
+use APP\plugins\blocks\journalMetrics\classes\Constants;
 
 
 class JournalMetricsPlugin extends BlockPlugin
@@ -61,11 +63,18 @@ class JournalMetricsPlugin extends BlockPlugin
     public function getContents($templateMgr, $request = null){
     
     $request = Application::get()->getRequest();
+    
+
+
     $journal = $request->getJournal();
     $journalId= $journal->getId();
-    $showTotal = $this->getSetting($request->getContext()->getId(), 'showTotal');
-    $colorBackground = $this->getSetting($request->getContext()->getId(), 'colorBackground');
-    $colorText = $this->getSetting($request->getContext()->getId(), 'colorText');
+    $context = $request->getContext();
+    $contextId = $context ? $context->getId() : null;
+    $showTotal = $contextId ? $this->getSetting($contextId, Constants::SHOW_TOTAL) : false;
+    $colorBackground = $contextId ? $this->getSetting($contextId, Constants::COLOR_BACKGROUND) : '';
+    $colorText = $contextId ? $this->getSetting($contextId, Constants::COLOR_TEXT) : '';
+
+
     $templateMgr->assign([
         "showTotal" => $showTotal,
         "colorBackground" => $colorBackground,
@@ -120,10 +129,13 @@ class JournalMetricsPlugin extends BlockPlugin
     public function getActions($request, $actionArgs): array
     {
         $actions = new Actions($this);
+        // // error_log("\n"."REQUEST -> ".print_r($request)."\n");
+
         return $actions->execute($request, $actionArgs, parent::getActions($request, $actionArgs));
     }
 
- /**
+ 
+    /**
      * Load a form when the `settings` button is clicked and
      * save the form when the user saves it.
      *
@@ -133,12 +145,8 @@ class JournalMetricsPlugin extends BlockPlugin
     public function manage($args, $request): JSONMessage
     {
         $manage = new Manage($this);
+      
         return $manage->execute($args, $request);
     }
-
-    public function getSettingsForm($context): \PKP\form\Form {
-        import('plugins.blocks.journalMetrics.classes.form.JournalMetricsSettingsForm');
-         return new \APP\plugins\blocks\journalMetrics\classes\form\JournalMetricsSettingsForm($this, $context->getId());
-}
 
 }

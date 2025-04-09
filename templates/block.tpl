@@ -13,7 +13,7 @@
 	color: {$colorText};
 	font-size: 2em;
 	padding: 24px 12px 12px;
-  border: rounded;
+  border-radius: 5px; 
 
 }
 .metrics_total {
@@ -25,6 +25,7 @@
   background-color:{$colorBackground};
 	color: {$colorText};
 	padding: 24px 12px 12px;
+  border-radius: 5px;
 }
 
 </style>
@@ -44,10 +45,12 @@
           <p>{$aggregatedMetrics.downloads}</p>
           <p>{translate key="plugins.block.journalMetrics.downloads"} </p>
         </div>
+        {if $showTotal}
         <div class="metrics_total">
           <p>{$aggregatedMetrics.total}</p>
           <p>{translate key="plugins.block.journalMetrics.total"} </p> 
         </div>
+        {/if}
       {else}
         <p>{translate key="plugins.block.journalMetrics.error"}</p>
       {/if}
