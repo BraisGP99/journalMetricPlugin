@@ -1,0 +1,39 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-10 09:20-0700\n"
+"PO-Revision-Date: 2025-04-10 17:52+0000\n"
+"Last-Translator: Dr. Kuldeep Singh ksingh@rsyn.org\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: hi_IN\n"
+
+msgid "plugins.block.journalMetrics.displayName"
+msgstr "जर्नल सांख्यिकी प्लगइन"
+
+msgid "plugins.block.journalMetrics.description"
+msgstr "जर्नल के दृश्य और डाउनलोड के लिए सांख्यिकी दिखाता है"
+
+msgid "plugins.block.journalMetrics.views"
+msgstr "दृश्य"
+
+msgid "plugins.block.journalMetrics.downloads"
+msgstr "डाउनलोड"
+
+msgid "plugins.block.journalMetrics.total"
+msgstr "कुल"
+
+msgid "plugins.block.journalMetrics.error"
+msgstr "जर्नल मेट्रिक्स प्लगइन त्रुटि"
+
+msgid "plugins.block.journalMetrics.showTotal.description"
+msgstr "कुल मेट्रिक्स दिखाता है"
+
+msgid "plugins.block.journalMetrics.colorBackground.description"
+msgstr "पृष्ठभूमि के लिए रंग चुनें"
+
+msgid "plugins.block.journalMetrics.colorText.description"
+msgstr "टेक्स्ट के लिए रंग चुनें"
