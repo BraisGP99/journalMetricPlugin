@@ -102,11 +102,10 @@ class JournalMetricsPlugin extends BlockPlugin
     //    error_log("metrics:" . print_r($metricsByType));
     //    error_log("metrics abstract:" . print_r($metricsByType['abstract']));
 
-        $metricsByType['abstract'] = 77;
 
        $metricsAggregated = [
             'views' =>  $metricsByType['abstract'],
-			'downloads' => 5
+			'downloads' => 0
 		];
 
 		foreach ($metricsByType as $key => $value) {
