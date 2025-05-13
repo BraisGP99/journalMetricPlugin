@@ -98,9 +98,6 @@ class JournalMetricsPlugin extends BlockPlugin
         // $statsServices = app()->get('publicationStats');
 
         $metricsByType = $statsServices->getTotalsByType($journalId,$request->getContext()->getId(),null,null);
-    // Por algún motivo los error logs hacen display en el html en la sección de los bloques? ??? no entiendo
-    //    error_log("metrics:" . print_r($metricsByType));
-    //    error_log("metrics abstract:" . print_r($metricsByType['abstract']));
 
 
        $metricsAggregated = [
@@ -128,7 +125,7 @@ class JournalMetricsPlugin extends BlockPlugin
     public function getActions($request, $actionArgs): array
     {
         $actions = new Actions($this);
-        // // error_log("\n"."REQUEST -> ".print_r($request)."\n");
+       
 
         return $actions->execute($request, $actionArgs, parent::getActions($request, $actionArgs));
     }
